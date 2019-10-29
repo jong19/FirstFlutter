@@ -31,8 +31,9 @@ class _UsersState extends State<Users> {
   
   Future<List<User>> getUsers() async {
 
-  // http.Response dataUsers = await http.get("https://jsonplaceholder.typicode.com/users");
-  http.Response dataUsers = await http.get("http://localhost:3000/users");
+  http.Response dataUsers = await http.get("https://jsonplaceholder.typicode.com/users");
+  //http.Response dataUsers = await http.get("http://localhost:3000/users");
+
   
 
     //print(dataUsers.statusCode);
