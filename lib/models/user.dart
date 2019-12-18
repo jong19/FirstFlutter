@@ -6,31 +6,29 @@ import 'address.dart';
 
 class User{
 
+    int id;
+    String firstname;
+    String lastname;
+    String username;
+    String email;
 
-    final int id;
-    final String name;
-    final String username;
-    final String email;
+    String street;
+    String suite;
+    String city;
+    String zipcode;
 
-    final String street;
-    final String suite;
-    final String city;
-    final String zipcode;
+    String phone;
+    String website;
 
-    final String phone;
-    final String website;
-
-    //final Object company;
   
-
 
     User(
       this.id,
-      this.name,
+      this.firstname,
+      this.lastname,
       this.username,
       this.email,
 
-     // this.address,
       this.street,
       this.suite,
       this.city,
@@ -39,7 +37,6 @@ class User{
       this.phone,
       this.website,
 
-     // this.company
      
     );
 

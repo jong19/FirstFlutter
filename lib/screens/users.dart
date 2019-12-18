@@ -31,43 +31,40 @@ class _UsersState extends State<Users> {
   
   Future<List<User>> getUsers() async {
 
-  //http.Response dataUsers = await http.get("https://jsonplaceholder.typicode.com/users");
   http.Response dataUsers = await http.get("http://localhost:3000/users");
 
   
-
-    //print(dataUsers.statusCode);
-    //print(dataUsers.body); 
-   
     if (dataUsers.statusCode == 200) {
       jsonUsers = json.decode(dataUsers.body);
+   
+
+      for(var ju in jsonUsers){
+
+          street = ju["address"]["street"];
+          suite = ju["address"]["suite"];
+          city = ju["address"]["city"];
+          zipcode = ju["address"]["zipcode"];
+        // print("$street, $suite, $city, $zipcode");
+
+      
+          user = User(ju["id"], ju["firstname"], ju["lastname"], ju["username"], ju["email"], 
+                street, suite, city, zipcode,
+                ju["phone"],ju["website"]);
+
+          
+          listUsers.add(user);
+        
       
 
-    //print(dataUsers.statusCode);
-   // print(jsonUsers);
-   // print( dataUsers.headers.toString());
+      }
+
+   
     }
     
-    for(var ju in jsonUsers){
-
-      street = ju["address"]["street"];
-      suite = ju["address"]["suite"];
-      city = ju["address"]["city"];
-      zipcode = ju["address"]["zipcode"];
-     // print("$street, $suite, $city, $zipcode");
-
-  
-     user = User(ju["id"], ju["name"], ju["username"], ju["email"], 
-            street, suite, city, zipcode,
-            ju["phone"],ju["website"]);
-    
-     
-     listUsers.add(user);
-
+    else{
+      print(throw new Exception());
     }
-
     
-
     return listUsers;
 
   }
@@ -100,7 +97,7 @@ class _UsersState extends State<Users> {
                 itemBuilder: (BuildContext context, int index ){
                     return ListTile(
                     // trailing: snapshot.data[index].avatar,
-                      title: Text(snapshot.data[index].name),
+                      title: Text("${snapshot.data[index].firstname} ${snapshot.data[index].lastname}"),
                       subtitle: Text(snapshot.data[index].email),
                       onTap: (){
                         return Navigator.push(context, MaterialPageRoute(builder: (context){

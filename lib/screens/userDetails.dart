@@ -17,7 +17,7 @@ class UserDetails extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(user.name),
+            title: Text("${user.firstname} ${user.lastname}"),
             
           ),
     
@@ -31,7 +31,7 @@ class UserDetails extends StatelessWidget {
                   Text(user.email),
                   Text(user.phone),
                   Text(user.website),
-
+              
                   Text(user.street + ", " + user.suite + ", " + user.city + ", " + user.zipcode),
 
             ],

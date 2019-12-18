@@ -1,7 +1,15 @@
+
+import 'package:first_flutter/api/api.dart';
 import 'package:first_flutter/screens/home.dart';
 import 'package:first_flutter/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:first_flutter/models/user.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jaguar_jwt/jaguar_jwt.dart';
 
 
 
@@ -19,6 +27,9 @@ class _LoginState extends State<Login> {
   AssetImage splashImage = AssetImage("images/first_flutter.png");
   bool _isHidden = true;
 
+  TextEditingController emailController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
+
 
 
   @override
@@ -27,7 +38,10 @@ class _LoginState extends State<Login> {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       body: Container(
-        child: Column(
+        child: Builder(
+            builder: (context) => Form(
+            key : _formKey,
+            child:    Column(
           children: <Widget>[
 
             // Logo and Title
@@ -70,8 +84,16 @@ class _LoginState extends State<Login> {
                 child: Column(
                   children: <Widget>[
                       TextFormField(
-                      decoration: InputDecoration(labelText: 'Email', ),
-                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(labelText: 'Username', ),
+                      keyboardType: TextInputType.text,
+                      validator: (value){
+                                      if (value.isEmpty) {
+                                        return "Username is required";
+                                        
+                                      }
+                                    },
+                      onSaved: (val) => setState(() => emailController.text = val),
+                      
                       
                   
                       ),
@@ -83,8 +105,16 @@ class _LoginState extends State<Login> {
                               suffixIcon: IconButton(
                                 onPressed: _togglePasswordVisibility,
                                 icon: _isHidden ? Icon(Icons.visibility_off) : Icon(Icons.visibility),
-                              ),             
+                              ),
+                                           
                             ),
+                              validator: (value){
+                                      if (value.isEmpty) {
+                                        return "Password is required";
+                                        
+                                      }
+                                    },
+                      onSaved: (val) => setState(() => passwordController.text = val),
                           
                           obscureText: _isHidden ? false : true,
 
@@ -101,11 +131,20 @@ class _LoginState extends State<Login> {
                                 color: Theme.of(context).primaryColor, 
                                 textColor: Colors.white, 
                                 child: new Text("Login"), 
-                                onPressed: () => {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                      return Home();
-                                  })),
-                                }, 
+                                      onPressed: ()  {
+                                      
+                                      
+                                      final form = _formKey.currentState;
+
+                                      if (form.validate()) {
+                                       form.save();
+                                      _loginUser();
+
+               
+                                      }
+                                      
+                                   
+                                    },  
                                 splashColor: Colors.purpleAccent,
                               ),
                                                  
@@ -132,17 +171,7 @@ class _LoginState extends State<Login> {
                   ),
                           
                                              
-                          
-                          
-                          
-                                             
-                          
-                          
-                                             
-                          
-                          
-                                              
-                          
+                
                                             ],
                                           ),
                           
@@ -152,17 +181,134 @@ class _LoginState extends State<Login> {
                                      
                                       
                                     ],
-                                  ),
+                                  ), 
+
+        )
+        
+        
+     
                                 ),
+                                )
                           
-                              );
+                              ); 
                           
                                
                             }
+
+      void _loginUser() async{
+
+          var loginBody;
+
+          var userToken;
+
+          var decodedToken;
+
+          var accessClaim;
+      
+
+         var decodedId, decodedEmail, decodedExpiry, decodedIat;
+         
+
+       
+        var dataUser = {
+          'userId' : '',
+          'email' : emailController.text,
+          'password' : passwordController.text
+        };
+
+      var loginResponse = await FirstFlutterApi().postRequest(dataUser, 'login');
+
+      if (loginResponse.statusCode == 200) {
+
+             loginBody = json.decode(loginResponse.body);
+             userToken = loginBody['accessToken'];
+            // await FirstFlutterApi().getToken();
+
+             // sent the token to decodeToken method which decodes the token using JaguarJWT 
+             decodedToken = FirstFlutterApi().decodeToken(userToken);
+            
+             // decoded so we can access specific claims in the list
+             accessClaim = json.decode(decodedToken);
+
+             print(decodedToken);
+
+            // 4 claims are being returned from the decoded token. 
+             decodedId = accessClaim['sub'];
+             decodedEmail = accessClaim['email'];
+             decodedIat = accessClaim['iat'];
+             decodedExpiry = accessClaim['exp'];
+
+             print('$decodedId, $decodedEmail, $decodedIat, $decodedExpiry');
+
+
+              print(await FirstFlutterApi().setId(decodedId));
+              print(await FirstFlutterApi().getId());
+
+            
+           Navigator.push(context, MaterialPageRoute(builder: (context){
+                return Home();
+           }));
+
+
+           
+           
+        
+      }
+
+      else{
+            
+            return showDialog(
+
+            context: context,
+            barrierDismissible: false, // user must tap button!
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Ooops...'),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text(loginResponse.body.toString()),
+                      
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                            
+                    },
+                  ),
+                ],
+              );
+            },
+      );
+
+      }
+
+
+      }
+
+      String decodeToken(String token){
+
+        final parts = token.split('.');
+        final payLoad = parts[1];
+
+        final String decodedToken = B64urlEncRfc7515.decodeUtf8(payLoad);
+
+       // print(decodedToken.runtimeType);
+
+        return decodedToken;
+
+ 
+
+      }
+
                           
-                            void _togglePasswordVisibility() {
-                                setState(() {
-                                   _isHidden = !_isHidden;
-                                });
-                            }
+      void _togglePasswordVisibility() {
+                  setState(() {
+                  _isHidden = !_isHidden;
+                  });
+     }
 }
