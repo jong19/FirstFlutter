@@ -21,34 +21,27 @@ class _PostsState extends State<Posts> {
    var postsAllBody;
    var userId, postId, postTitle, postBody;
 
+   var uid, utoken;
+
    List<Post> listPosts = [];
    Post post;
    User user;
 
 
+
+
   Future<List<Post>> getPosts()  async  {
 
-    var uid = await FirstFlutterApi().getId();
+   uid = await FirstFlutterApi().getId();
+   utoken = await FirstFlutterApi().getToken();
 
-    // var data = {
-    //   'userId' : userId,
-    //   'id' : postId,
-    //   'title' : postTitle,
-    //   'body' : postBody
-    // };
-
-    print(uid);
-
- 
-    http.Response responsePosts = await FirstFlutterApi().getRequest('posts');
-
-    print(uid);
+    //http.Response responsePosts = await FirstFlutterApi().getRequest('posts');
+    print("USER ID FROM POSTS $uid");
+    http.Response responsePosts = await FirstFlutterApi().getRequest('posts?userId=$uid');
 
     if (responsePosts.statusCode == 200) {
      
         postsBody = json.decode(responsePosts.body);
-
-       // print('POSTS BODY $postsBody');
 
           for(var pb in postsBody){
               userId = pb["userId"];
@@ -72,9 +65,17 @@ class _PostsState extends State<Posts> {
 
   @override
   Widget build(BuildContext context) {
+      Image blogImage = Image.network("https://via.placeholder.com/150/8985dc");
+      var now = new DateTime.now();
+      var year = now.year;
+      var month = now.month;
+      var day = now.day;
+
+      
     return Scaffold(
       appBar: AppBar(
         title: Text("Posts"),
+
       ),
       body: Container(
         child: FutureBuilder(
@@ -96,22 +97,63 @@ class _PostsState extends State<Posts> {
               return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (BuildContext context, int index ){
-                    return ListTile(
-                     // trailing: Text(snapshot.data.length.toString()),
-                      title: Text(snapshot.data[index].id.toString() + ' ' + snapshot.data[index].title),
-                      subtitle: Text(snapshot.data[index].userId.toString()),
-                      onTap: (){
-                        
-                        return Navigator.push(context, MaterialPageRoute(builder: (context){
-                          return PostDetails(snapshot.data[index]);
+                    return Card(
+                      margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
+                      elevation: 5.0,
+                      
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                             ListTile(
+                                   
+                                    trailing: blogImage,
+                                    title: Text(snapshot.data[index].title),
+                                    subtitle: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      
+                                  
+                                      children: <Widget>[
 
-                        }));
-                        
+                                        Text("by: user ${snapshot.data[index].userId} "),
+                                        Text("published : " + year.toString() + "-" + month.toString() + "-" + day.toString() )
+                                      ],
+                                    ),
+                             
+                                  //title: Text(snapshot.data[index].userId.toString()),
+                                // subtitle: Text(utoken),
+                                  onTap: (){
+                                    
+                                    return Navigator.push(context, MaterialPageRoute(builder: (context){
+                                     // print('POSTS SNAPSHOT DATA ' + snapshot.data[index].id.toString());
+                                      return PostDetails(snapshot.data[index]);
+                                      //return PostDetails(snapshot.data[index].id.toString());
 
-                      },
+                                    }));
+                                    
+
+                                  },
 
 
-                    );
+
+                               ),
+                              /*
+                               Image(
+                                 image: splashImage,
+                               )
+                               */
+
+                              
+
+                              
+
+                        ],
+                      ),
+                  );
+
+
+                 
+
+                
                   
                 }
             

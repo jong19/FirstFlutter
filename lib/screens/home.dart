@@ -1,6 +1,7 @@
 import 'package:first_flutter/screens/posts.dart';
 import 'package:first_flutter/screens/users.dart';
 import 'package:first_flutter/screens/login.dart';
+import 'package:first_flutter/api/api.dart';
 import 'package:flutter/material.dart';
 
 
@@ -10,8 +11,34 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  var id, token;
+  var idTokenMap = Map();
+
+  Future<Map<String, String>> getCurrentId() async {
+      id = await FirstFlutterApi().getId();
+      token = await FirstFlutterApi().getToken();
+
+      idTokenMap['id'] = id;
+      idTokenMap['token'] = token;
+
+     // print(idTokenMap);
+
+      return idTokenMap;
+      
+
+      
+     
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
+
+   id = FirstFlutterApi().getId().toString();
+   token = FirstFlutterApi().getToken().toString();
+
     return Scaffold(
         appBar: AppBar(
           title: Text("Flutter"),
@@ -108,6 +135,53 @@ class _HomeState extends State<Home> {
         ),
       ),
 
+      body: FutureBuilder(
+        future: getCurrentId(),
+        builder: (BuildContext context, AsyncSnapshot snapshot){
+            
+            if (snapshot.data == null){
+                return Container(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                   // child : Text(snapshot.toString()),
+                  ),
+                );    
+            }
+                else {
+                    return ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index ){
+                  
+                          return ListTile(
+                          // trailing: Text(snapshot.data.length.toString()),
+                            title: Text(snapshot.data[index].id.toString()),
+                            subtitle: Text(snapshot.data[index].token.toString()),
+                            onTap: (){
+                              
+                
+
+                            },
+
+
+
+                          );
+
+                      
+                        
+                      }
+                  
+
+                    );
+
+          }
+
+        }
+      )
     );
+
+   
+   
+      
+    
   }
 }

@@ -348,7 +348,7 @@ class _RegisterState extends State<Register> {
      
 
         
-          print('REGISTER BODY ${registerBody['accessToken']}');
+         // print('REGISTER BODY ${registerBody['accessToken']}');
 
         
           if (registerBody != null)  {
@@ -356,7 +356,7 @@ class _RegisterState extends State<Register> {
             userToken = registerBody['accessToken'];
 
             await FirstFlutterApi().setToken(userToken);
-            print(await FirstFlutterApi().getToken());
+            print('USER TOKEN IN REGISTER ' + await FirstFlutterApi().getToken());
 
                 
            Navigator.push(context, MaterialPageRoute(builder: (context){
@@ -409,7 +409,7 @@ class _RegisterState extends State<Register> {
       
     }
 
-    print('USER TOKEN => $userToken');
+    print('USER TOKEN IN REGISTER => $userToken');
 
     return await Future.value('RETURNED SAVEUSER() WITH API CLASS $userToken');
     //return await Future.value(errMsg);

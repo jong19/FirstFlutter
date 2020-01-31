@@ -22,31 +22,25 @@ class FirstFlutterApi{
   }
 
   getRequest(apiRoot) async{
-    var fullUrl = baseUrl + apiRoot + await getId(); //getToken();
+    var fullUrl = baseUrl + apiRoot; //+ await getId();
     
     return await http.get(
       fullUrl,
       headers: _setHeaders(),
+      
 
 
     );
+
+
   }
 
-
+  
   _setHeaders() => {
     'Content-type' : 'application/json',
     'Accept' : 'application/json',
     
   };
-
- /*
-  _getToken() async {
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    var token = localStorage.getString('token');
-    return '?token=$token';
-
-  } 
-  */
 
 
   
@@ -78,9 +72,12 @@ class FirstFlutterApi{
     
     SharedPreferences localStorage = await SharedPreferences.getInstance();
     var userId = localStorage.getString('sub');
-    return '?userId=$userId';
+    //return '?userId=$userId';
+    return '$userId';
 
    }
+
+  
 
    String decodeToken(String token) {
 

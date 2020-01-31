@@ -230,7 +230,9 @@ class _LoginState extends State<Login> {
              // decoded so we can access specific claims in the list
              accessClaim = json.decode(decodedToken);
 
-             print(decodedToken);
+             print('USER TOKEN IN LOGIN ==> $userToken');
+            // print('DECODED TOKEN ==> $decodedToken');
+            // print('ACCESS CLAIM ==> $accessClaim');
 
             // 4 claims are being returned from the decoded token. 
              decodedId = accessClaim['sub'];
@@ -238,10 +240,10 @@ class _LoginState extends State<Login> {
              decodedIat = accessClaim['iat'];
              decodedExpiry = accessClaim['exp'];
 
-             print('$decodedId, $decodedEmail, $decodedIat, $decodedExpiry');
+           //  print('$decodedId, $decodedEmail, $decodedIat, $decodedExpiry');
 
-
-              print(await FirstFlutterApi().setId(decodedId));
+              await FirstFlutterApi().setToken(userToken);
+              await FirstFlutterApi().setId(decodedId);
               print(await FirstFlutterApi().getId());
 
             
