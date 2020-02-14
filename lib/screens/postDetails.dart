@@ -82,6 +82,12 @@ class PostDetails extends StatelessWidget {
       var month = now.month;
       var day = now.day;
 
+    
+  
+      final _screenHeight = MediaQuery.of(context).size.height;
+
+  
+
         return Scaffold(
           resizeToAvoidBottomPadding: false,
           appBar: AppBar(
@@ -89,26 +95,20 @@ class PostDetails extends StatelessWidget {
             
           ),
     
-          body: Container(
+          body: Column(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                   Container(
+                     child : Image.network("https://via.placeholder.com/150/8985dc", 
+                     width: 500,
+                     height: 200,
+               
+                  ),
+                  
+                ),
 
-            child: Column(
-
-                 children: <Widget>[
-
-                          Container(
-                            child : Image.network("https://via.placeholder.com/150/8985dc", 
-                            width: 500,
-                            height: 200,
-                             
-                           
-                          ),
-
-                          ),
-            
-                         
-                          
-                       
-                          Row(
+                 Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             
                             children: <Widget>[
@@ -131,19 +131,15 @@ class PostDetails extends StatelessWidget {
                                     Text( year.toString() + "-" + month.toString() + "-" + day.toString() )
 
                                   ],
-                                )
+                                ),
 
-                             
-                         
                             ],
                             
                        
 
                           ),
 
-                          SizedBox(height: 20,),
-
-                       
+                           SizedBox(height: 20,),
 
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -163,45 +159,54 @@ class PostDetails extends StatelessWidget {
 
                             ],
                           ),
+                        
+                         Divider(color: Colors.teal, thickness: 2, height: 30,),
 
-                          Divider(color: Colors.teal, thickness: 2, height: 30,),
 
+                ],
+              ),
 
-                          Column( 
-                           
+              
+
+               SingleChildScrollView(
+
+                 child: Column( 
+                        
                            children: <Widget>[
-
-                      
                                FutureBuilder(
                                       future: getComments(),
                                       builder: (BuildContext context, AsyncSnapshot snapshot){
                                       
                                         if (snapshot.connectionState == ConnectionState.done){
 
-                                            return ListView.builder(
+                                          return ListView.builder(
                                                 
-                                                scrollDirection: Axis.vertical, 
+                                                scrollDirection: Axis.vertical,
                                                 shrinkWrap: true,                                              
                                                 itemCount: snapshot.data.length,
                                                 itemBuilder: (BuildContext context, int index ){
-                                              
 
-                                              return  Container(
+                                                  var commentCount = snapshot.data.length;
+
+                                                  return Column(
+                                       
+                                                       children: <Widget>[
+                                                            ListTile(     
+                                                             isThreeLine: true,    
+                                                              dense: true,                             
+                                                              title: Text(snapshot.data[index].email , style: TextStyle(color: Colors.teal, ),),
+                                                              subtitle: Text(snapshot.data[index].body),
+                                                            ),
+
+                                                       ],
+                                                    
+                                                      );
                                               
-                                                child :
                                                   
-                                                      ListTile(     
-                                                       // isThreeLine: true,    
-                                                        dense: true,                             
-                                                        title: Text(snapshot.data[index].name),
-                                                        subtitle: Text(snapshot.data[index].body),
-                                                    ),
 
-                                                ); 
-
-                                     
                                             }
-                                          );   
+                                          );
+  
                                         }
                                         else{
                                             return Container(
@@ -221,80 +226,30 @@ class PostDetails extends StatelessWidget {
 
                                   ),
 
-                             
-                                    
-                                    
-                                  
-                                  
-                                    
-
-                                   
-
-                                
-                            
-                                 
+                       
                            ],
                             
 
                           ),
-                          
-                     
+
+               )
 
                      
-                           
-                          
-
-
-                          
-                         
-
-                          
-
-
-                          
-
-                       
-
-                         
 
 
 
 
 
-                          
 
 
-                  
-                    ],
-              
-            ),
 
+               
+
+            ],
+
+            
           )
-            
-         
-                  
-            
-          
-
-
-
-
-             
-                
-
-              
-            
-      
-         
-        
-      
-    
-
-
-
-    );
-      
-
-  }
+        );
+  
 }
-
+}
